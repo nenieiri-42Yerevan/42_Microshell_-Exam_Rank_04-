@@ -6,7 +6,7 @@
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 12:10:54 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 13:44:01 by vismaily         ###   ########.fr       */
+/*   Updated: 2022/05/17 14:04:08 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,23 @@ static void	exec_cd(char **cmd)
 		errors(2, cmd[1]);
 }
 
-static void	exec(char **cmd, char **encp)
+static void	exec_cmd(char **cmd, char **envp)
+{
+	pid_t	pid;
+
+	if ((pid = fork()) < 0)
+		errors(3, NULL);
+	if (pid == 0)
+		if (execve(cmd[0], cmd, envp) == -1)
+			errors(4, cmd[0]);
+	waitpid(0, NULL, 0);
+}
+
+static void	exec(char **cmd, char **envp)
 {
 	if (strcmp(cmd, "cd") == 0)
 		exec_cd(cmd);
+	exec_cmd(cmd, envp);
 }
 
 int	main(int argc, char **argv, char **envp)
