@@ -1,27 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   microshell.h                                       :+:      :+:    :+:   */
+/*   exec_cd.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/17 13:41:21 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 16:25:56 by vismaily         ###   ########.fr       */
+/*   Created: 2022/05/17 16:01:41 by vismaily          #+#    #+#             */
+/*   Updated: 2022/05/17 16:02:08 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MICROSHELL_H
-# define MICROSHELL_H
+#include "microshell.h"
 
-# include <stdlib.h>
-# include <unistd.h>
-# include <string.h>
-# include <sys/wait.h>
-
-void	exec(char **cmd, char **envp);
-void	exec_cd(char **cmd);
-void	exec_cmd(char **cmd, char **envp);
-void	errors(int err_num, char *msg);
-char	**next_pipe(char **cmd);
-
-#endif
+void	exec_cd(char **cmd)
+{
+	if (cmd[1] == 0 || cmd[2] != 0)
+		errors(1, NULL);
+	if (chdir(cmd[1]) == -1)
+		errors(2, cmd[1]);
+}

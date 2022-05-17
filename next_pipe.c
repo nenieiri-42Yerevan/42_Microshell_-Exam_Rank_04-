@@ -1,40 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   microshell.c                                       :+:      :+:    :+:   */
+/*   next_pipe.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/17 12:10:54 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 14:14:25 by vismaily         ###   ########.fr       */
+/*   Created: 2022/05/17 15:54:51 by vismaily          #+#    #+#             */
+/*   Updated: 2022/05/17 16:32:03 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "microshell.h"
 
-int	main(int argc, char **argv, char **envp)
+char	**next_pipe(char **cmd)
 {
 	int	i;
-	int	start;
 
-	i = 1;
-	start = 1;
-	if (argc < 2)
+	i = 0;
+	if (cmd == 0)
 		return (0);
-	while (argv[i] != 0)
+	while (cmd[i] != 0)
 	{
-		if (strcmp(argv[i], ";") == 0)
-		{
-			argv[i] = '\0';
-			exec(argv + start, envp);
-			i++;
-			while (argv[i] != 0 && strcmp(argv[i], ";") == 0)
-				i++;
-			start = i;
-		}
-		else
-			i++;
+		if (strcmp(cmd[i], "|") == 0)
+			return (cmd + i + 1);
+		i++;
 	}
-	exec(argv + start, envp);
 	return (0);
 }

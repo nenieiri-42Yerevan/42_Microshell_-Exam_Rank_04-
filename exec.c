@@ -6,35 +6,70 @@
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:12:58 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 14:14:21 by vismaily         ###   ########.fr       */
+/*   Updated: 2022/05/17 17:52:05 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "microshell.h"
 
-static void	exec_cd(char **cmd)
+static void	exec_child(char **cmd, char **envp, int in, int fd[2])
 {
-	if (cmd[1] == 0 || cmd[2] != 0)
-		errors(1, NULL);
-	if (chdir(cmd[1]) == -1)
-		errors(2, cmd[1]);
+	int	i;
+
+	i = -1;
+	if (dup2(in, STDIN_FILENO) < 0)
+		errors(3, NULL);
+	if (next_pipe(cmd) != 0 && dup2(fd[1], STDOUT_FILENO) < 0)
+		errors(3, NULL);
+	close(in);
+	close(fd[0]);
+	close(fd[1]);
+	while (cmd[++i] != 0)
+		if (strcmp(cmd[i], "|") == 0)
+			break ;
+	cmd[i] = 0;
+	exec_cmd(cmd, envp);
+	exit(0);
 }
 
-static void	exec_cmd(char **cmd, char **envp)
+static void	exec_pipes(char **cmd, char **envp)
 {
 	pid_t	pid;
+	int		in;
+	int		fd[2];
+	int		nb_wait;
 
-	if ((pid = fork()) < 0)
+	nb_wait = 0;
+	in = dup(STDIN_FILENO);
+	if (in < 0)
 		errors(3, NULL);
-	if (pid == 0)
-		if (execve(cmd[0], cmd, envp) == -1)
-			errors(4, cmd[0]);
-	waitpid(0, NULL, 0);
+	while (cmd)
+	{
+		if (pipe(fd) < 0 || (pid = fork()) < 0)
+			errors(3, NULL);
+		if (pid == 0)
+			exec_child(cmd, envp, in, fd);
+		else
+		{
+			if (dup2(fd[0], in) < 0)
+				errors(3, NULL);
+			close(fd[0]);
+			close(fd[1]);
+			cmd = next_pipe(cmd);
+			nb_wait++;
+		}
+	}
+	close(in);
+	while (nb_wait-- > 0)
+		waitpid(0, NULL, 0);
 }
 
 void	exec(char **cmd, char **envp)
 {
-	if (strcmp(cmd, "cd") == 0)
+	if (strcmp(cmd[0], "cd") == 0)
 		exec_cd(cmd);
-	exec_cmd(cmd, envp);
+	else if (next_pipe(cmd) == 0)
+		exec_cmd(cmd, envp);
+	else
+		exec_pipes(cmd, envp);
 }

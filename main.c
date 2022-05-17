@@ -1,27 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   microshell.h                                       :+:      :+:    :+:   */
+/*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/17 13:41:21 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 16:25:56 by vismaily         ###   ########.fr       */
+/*   Created: 2022/05/17 12:10:54 by vismaily          #+#    #+#             */
+/*   Updated: 2022/05/17 16:35:33 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MICROSHELL_H
-# define MICROSHELL_H
+#include "microshell.h"
 
-# include <stdlib.h>
-# include <unistd.h>
-# include <string.h>
-# include <sys/wait.h>
+int	main(int argc, char **argv, char **envp)
+{
+	int	i;
+	int	start;
 
-void	exec(char **cmd, char **envp);
-void	exec_cd(char **cmd);
-void	exec_cmd(char **cmd, char **envp);
-void	errors(int err_num, char *msg);
-char	**next_pipe(char **cmd);
-
-#endif
+	i = 1;
+	start = 1;
+	if (argc < 2)
+		return (0);
+	while (argv[i] != 0)
+	{
+		if (strcmp(argv[i], ";") == 0)
+		{
+			argv[i] = 0;
+			exec(argv + start, envp);
+			i++;
+			while (argv[i] != 0 && strcmp(argv[i], ";") == 0)
+				i++;
+			start = i;
+		}
+		else
+			i++;
+	}
+	exec(argv + start, envp);
+	return (0);
+}
