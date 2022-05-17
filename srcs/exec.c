@@ -6,13 +6,13 @@
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 14:12:58 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 17:52:05 by vismaily         ###   ########.fr       */
+/*   Updated: 2022/05/17 20:29:51 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "microshell.h"
 
-static void	exec_child(char **cmd, char **envp, int in, int fd[2])
+static void	child(char **cmd, char **envp, int in, int fd[2])
 {
 	int	i;
 
@@ -32,6 +32,16 @@ static void	exec_child(char **cmd, char **envp, int in, int fd[2])
 	exit(0);
 }
 
+static void	parent(char ***cmd, int in, int fd[2], int *nb_wait)
+{
+	if (dup2(fd[0], in) < 0)
+		errors(3, NULL);
+	close(fd[0]);
+	close(fd[1]);
+	*cmd = next_pipe(*cmd);
+	(*nb_wait)++;
+}
+
 static void	exec_pipes(char **cmd, char **envp)
 {
 	pid_t	pid;
@@ -45,19 +55,15 @@ static void	exec_pipes(char **cmd, char **envp)
 		errors(3, NULL);
 	while (cmd)
 	{
-		if (pipe(fd) < 0 || (pid = fork()) < 0)
+		if (pipe(fd) < 0)
+			errors(3, NULL);
+		pid = fork();
+		if (pid < 0)
 			errors(3, NULL);
 		if (pid == 0)
-			exec_child(cmd, envp, in, fd);
+			child(cmd, envp, in, fd);
 		else
-		{
-			if (dup2(fd[0], in) < 0)
-				errors(3, NULL);
-			close(fd[0]);
-			close(fd[1]);
-			cmd = next_pipe(cmd);
-			nb_wait++;
-		}
+			parent(&cmd, in, fd, &nb_wait);
 	}
 	close(in);
 	while (nb_wait-- > 0)
