@@ -1,7 +1,7 @@
 # Subject
 
-Assignment name  : microshell
-Expected files   : *.c *.h
+Assignment name  : microshell<br>
+Expected files   : *.c *.h<br>
 Allowed functions: malloc, free, write, close, fork, waitpid, signal, kill, exit, chdir, execve, dup, dup2, pipe, strcmp, strncmp
 ___
 Write a program that will behave like executing a shell command
@@ -32,5 +32,5 @@ $>
 - Do not leak file descriptors!
 
 #### Additional information
-For usage just run ``make``.
+For usage just run ``make``.<br>
 For exam you need to write whole code from srcs directory (no need to Makefile).
