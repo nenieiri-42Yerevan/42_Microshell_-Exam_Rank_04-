@@ -6,7 +6,7 @@
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 13:39:38 by vismaily          #+#    #+#             */
-/*   Updated: 2022/05/17 16:21:21 by vismaily         ###   ########.fr       */
+/*   Updated: 2022/05/20 20:57:38 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,21 @@ static void	print_error(char *msg)
 	}
 }
 
-void	errors(int err_num, char *msg)
+int	errors(int err_num, char *msg)
 {
 	if (err_num == 1)
+	{
 		print_error("error: cd: bad arguments");
+		print_error("\n");
+		return (0);
+	}
 	else if (err_num == 2)
+	{
 		print_error("error: cd: cannot change directory to ");
+		print_error(msg);
+		print_error("\n");
+		return (0);
+	}
 	else if (err_num == 3)
 		print_error("error: fatal");
 	else if (err_num == 4)
