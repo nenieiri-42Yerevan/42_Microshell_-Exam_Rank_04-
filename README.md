@@ -34,5 +34,5 @@ $>
 #### Additional information
 For usage just run ``make``.<br>
 ```
-For exam you need to write whole code from FOR_EXAM_(WHOLE_CODE_IN_ONE_FILE).c file only.
+For exam you only need to write whole code from FOR_EXAM_(WHOLE_CODE_IN_ONE_FILE).c file.
 ```
