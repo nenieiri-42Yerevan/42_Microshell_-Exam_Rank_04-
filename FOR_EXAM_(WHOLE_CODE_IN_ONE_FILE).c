@@ -6,7 +6,7 @@
 /*   By: vismaily <nenie_iri@mail.ru>               +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/09 18:07:50 by vismaily          #+#    #+#             */
-/*   Updated: 2022/07/09 18:19:28 by vismaily         ###   ########.fr       */
+/*   Updated: 2022/07/28 19:59:53 by vismaily         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,7 @@ static void	exec_cd(char **cmd)
 {
 	if (cmd[1] == 0 || cmd[2] != 0)
 		errors(1, NULL);
-	if (chdir(cmd[1]) == -1)
+	else if (chdir(cmd[1]) == -1)
 		errors(2, cmd[1]);
 }
 
